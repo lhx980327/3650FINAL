@@ -1,0 +1,135 @@
+
+# loading some basic functions needed for the game
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+from qiskit import execute, BasicAer
+from qiskit.tools.visualization import plot_histogram, circuit_drawer
+from ipywidgets import interact
+
+
+
+
+def MoveA1(move_A1): global moveA1; moveA1=move_A1;
+def MoveB1(move_B1): global moveB1; moveB1=move_B1;
+def MoveA2(move_A2): global moveA2; moveA2=move_A2;
+
+
+def who_wins(counts):
+    if len(counts)==1 :
+        print('The winner is', 'A' if ("0" in counts) else 'B')
+    else:
+        count0=counts["0"]
+        count1=counts["1"]
+        print('The coin is in superposition of |0⟩ and |1⟩')
+        print('A wins with probability',  "%.1f%%" % (100.*count0/(count0+count1)))
+        print('B wins with probability',  "%.1f%%" % (100.*count1/(count0+count1)))
+    return()
+
+
+interact(MoveA1, move_A1={'id Gate':0,'X Gate':1});
+
+
+
+interact(MoveB1, move_B1={'id Gate':0,'X Gate':1});
+
+
+interact(MoveA2, move_A2={'id Gate':0,'X Gate':1});
+#optional: print the three moves. 
+# 0: id Gate (leave the coin unchanged), 1: X Gate (turn the coin)
+print(moveA1, moveB1, moveA2)
+# create the quantum circuit with the chosen coin moves
+q = QuantumRegister(1) # create a quantum register with one qubit
+# create a classical register that will hold the results of the measurement
+c = ClassicalRegister(1) 
+qc = QuantumCircuit(q, c) # creates the quantum circuit
+backend = BasicAer.get_backend('qasm_simulator') # define the backend
+
+# 1. move of A
+qc.iden(q[0]) if (moveA1 == 0) else qc.x(q[0]) 
+    
+# 1. move of B 
+qc.iden(q[0]) if (moveB1 == 0) else qc.x(q[0])      
+
+# 2. move of A
+qc.iden(q[0]) if (moveA2 == 0) else qc.x(q[0]) 
+    
+qc.measure(q, c) # Measure the qubits
+qc.draw(output='mpl') # plot the circuit
+# execute the quantum circiut (coin moves) and identify the winner
+
+job = execute(qc, backend, shots=200) # run the job simulation
+
+result = job.result() # grab the result
+
+counts = result.get_counts(qc) # results for the number of runs
+
+print(counts); # print the results of the runs
+who_wins(counts); # celebrate the winner
+
+
+
+
+
+
+
+
+Apply h-gate:
+# loading some basic functions needed for the game
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+from qiskit import execute, BasicAer
+from qiskit.tools.visualization import plot_histogram, circuit_drawer
+from ipywidgets import interact
+
+
+
+
+def MoveA1(move_A1): global moveA1; moveA1=move_A1;
+def MoveB1(move_B1): global moveB1; moveB1=move_B1;
+def MoveA2(move_A2): global moveA2; moveA2=move_A2;
+
+
+def who_wins(counts):
+    if len(counts)==1 :
+        print('The winner is', 'A' if ("0" in counts) else 'B')
+    else:
+        count0=counts["0"]
+        count1=counts["1"]
+        print('The coin is in superposition of |0⟩ and |1⟩')
+        print('A wins with probability',  "%.1f%%" % (100.*count0/(count0+count1)))
+        print('B wins with probability',  "%.1f%%" % (100.*count1/(count0+count1)))
+    return()
+
+interact(MoveA1, move_A1={'id Gate':0,'X Gate':1, 'H Gate':2});
+
+interact(MoveB1, move_B1={'id Gate':0,'X Gate':1});
+interact(MoveA2, move_A2={'id Gate':0,'X Gate':1, 'H Gate':2});
+print(moveA1, moveB1, moveA2)
+# create the quantum circuit with the chosen coin moves
+q = QuantumRegister(1) # create a quantum register with one qubit
+# create a classical register that will hold the results of the measurement
+c = ClassicalRegister(1) 
+qc = QuantumCircuit(q, c) # creates the quantum circuit
+backend = BasicAer.get_backend('qasm_simulator') # define the backend
+
+
+# 1. move of A
+qc.iden(q[0]) if (moveA1 == 0) else qc.x(q[0]) 
+    
+# 1. move of B 
+qc.iden(q[0]) if (moveB1 == 0) else qc.x(q[0])      
+
+# 2. move of A
+qc.iden(q[0]) if (moveA2 == 0) else qc.x(q[0])
+
+
+qc.measure(q, c) # Measure the qubits
+qc.draw(output='mpl') # plot the circuit
+job = execute(qc, backend, shots=200) # run the job simulation
+
+result = job.result() # grab the result
+
+counts = result.get_counts(qc) # results for the number of runs
+
+print(counts); # print the results of the runs
+who_wins(counts); # celebrate the winner
+
+plot_histogram(counts) # Visualise the results
